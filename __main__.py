@@ -17,7 +17,7 @@ print(json.dumps(  # --- Atenção: Rodar usando python 3.10+
             </div>
             <div>
                 --- ultima DIV ---
-            </div >
+            </DIV >
             <p>Segundo P</p>
         </body>
         <input type="password">Digite a senha</UNKNOW>

@@ -53,7 +53,7 @@ def scan_tags(text: str) -> dict:
             case _:
                 if status != CLOSING:
                     content += token.strip()
-                elif node.id != token:
+                elif node.id.lower() != token.strip().lower():
                     node.add(
                         f'*** Mismatched identifier {token} ***',
                         simple_txt=True
