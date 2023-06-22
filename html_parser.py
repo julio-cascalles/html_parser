@@ -18,35 +18,44 @@ class Tag:
         return child
 
 
+START, END, CLOSING = 1, 2, 3
+
 def scan_tags(text: str) -> dict:
-    start, end, closing = [False] * 3
+    status = 0
     content = ''
-    root = Tag('html')
-    node = root
+    node = root = Tag('html')
     for token in re.split('(<|/|>)', text):
-        if not start and token in ['>', '/']:
-            content += token
-            continue
         match token:
             case '<':
                 if content:
                     node.add(content, simple_txt=True)
                     content = ''
-                start, end = True, False
+                status = START
             case '>':
-                if closing:
+                if status == END:
+                    content += token
+                elif status == CLOSING:
                     node = node.parent
-                    start, end, closing = [False] * 3
+                    status = 0
                 else:
-                    tokens = [t.strip() for t in re.split(' |=|"', content) if t]
+                    words = [w.strip() for w in re.split(' |=|"', content) if w]
                     node = node.add(
-                        tokens.pop(0),
-                        attribs={k: v for k, v in zip(tokens[::2], tokens[1::2])}
+                        words.pop(0),
+                        attribs={k: v for k, v in zip(words[::2], words[1::2])}
                     )
-                    start, end = False, True
-                content = ''                    
+                    status = END
+                    content = ''
             case '/':
-                closing = True
+                if status == START:
+                    status = CLOSING
+                else:
+                    content += token
             case _:
-                content += token.strip()
+                if status != CLOSING:
+                    content += token.strip()
+                elif node.id != token:
+                    node.add(
+                        f'*** Mismatched identifier {token} ***',
+                        simple_txt=True
+                    )
     return root.data
