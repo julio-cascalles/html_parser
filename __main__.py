@@ -18,7 +18,7 @@ print(json.dumps(  # --- Atenção: Rodar usando python 3.10+
             <div>
                 --- ultima DIV ---
             </DIV >
-            <p>Segundo P</p>
+            <section>Tags Anonimas<a href="mysite/news.com">Noticias</></>
         </body>
         <img src="myalbum/photo20210826.png" />
         <input type="password">Digite a senha</UNKNOW>
