@@ -18,13 +18,13 @@ class Tag:
         return child
 
 
-START, END, CLOSING = 1, 2, 3
+START, END, CLOSING, QUOTED, AUTO_CLOSE = 1, 2, 3, 4, 5
 
 def scan_tags(text: str) -> dict:
     status = 0
     content = ''
     node = root = Tag('html')
-    for token in re.split('(<|/|>)', text):
+    for token in re.split('(<|"|/|>)', text):
         match token:
             case '<':
                 if content:
@@ -32,24 +32,32 @@ def scan_tags(text: str) -> dict:
                     content = ''
                 status = START
             case '>':
-                if status == END:
+                if status in [END, QUOTED]:
                     content += token
                 elif status == CLOSING:
                     node = node.parent
                     status = 0
                 else:
                     words = [w.strip() for w in re.split(' |=|"', content) if w]
-                    node = node.add(
+                    new = node.add(
                         words.pop(0),
                         attribs={k: v for k, v in zip(words[::2], words[1::2])}
                     )
+                    if status != AUTO_CLOSE:
+                        node = new
                     status = END
                     content = ''
             case '/':
                 if status == START:
-                    status = CLOSING
+                    status = AUTO_CLOSE if content else CLOSING
                 else:
                     content += token
+            case '"':
+                if status == QUOTED:
+                    status = START
+                else:
+                    status = QUOTED
+                content += token
             case _:
                 token = token.strip()
                 if status != CLOSING:

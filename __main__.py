@@ -3,7 +3,7 @@ from html_parser import scan_tags
 
 
 print(json.dumps(  # --- Atenção: Rodar usando python 3.10+
-    scan_tags("""
+    scan_tags('''
         <head>
             <title>Titulo</title>
         </head>
@@ -20,7 +20,8 @@ print(json.dumps(  # --- Atenção: Rodar usando python 3.10+
             </DIV >
             <p>Segundo P</p>
         </body>
+        <img src="myalbum/photo20210826.png" />
         <input type="password">Digite a senha</UNKNOW>
-    """),
+    '''),
     indent=4)
 )
